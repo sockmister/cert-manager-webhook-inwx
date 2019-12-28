@@ -11,7 +11,7 @@ test:
     - scripts/fetch-test-binaries.sh
     - envsubst < testdata/config.json.tpl > testdata/config.json
     - go mod download
-    - go test -cover .
+    - go test -v -cover .
   coverage: '/coverage:\s(\d+(?:\.\d+)?%)/'
   interruptible: true
 
