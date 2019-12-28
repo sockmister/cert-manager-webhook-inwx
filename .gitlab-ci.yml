@@ -13,6 +13,7 @@ test:
     - go mod download
     - go test -cover .
   coverage: '/coverage:\s(\d+(?:\.\d+)?%)/'
+  interruptible: true
 
 lint-go:
   stage: test
@@ -20,6 +21,7 @@ lint-go:
     - apk add --no-cache git
     - go get -u golang.org/x/lint/golint
     - golint -set_exit_status
+  interruptible: true
 
 lint-helm:
   stage: test
@@ -28,6 +30,7 @@ lint-helm:
     entrypoint: [""]
   script:
     - helm lint deploy/cert-manager-webhook-inwx
+  interruptible: true
 
 docker:
   stage: deploy
@@ -38,3 +41,4 @@ docker:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  interruptible: true
