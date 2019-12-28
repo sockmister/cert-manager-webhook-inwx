@@ -14,7 +14,16 @@
 # Ignore the built binary
 /cert-manager-webhook-inwx
 
+.git/
+/deploy
 /kubebuilder
-testdata/config.json
+/scripts
+/test
+/testdata
+/.gitignore
+/.gitlab-ci.yml
+/LICENSE
+/main_test.go
+/README.md
 
 .idea/
