@@ -50,8 +50,8 @@ pages:
   image:
     name: alpine/helm:3.1.2
     entrypoint: [""]
-  #only:
-  #  - tags
+  only:
+    - tags
   before_script:
     - mkdir public
     - cd public
