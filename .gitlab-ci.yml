@@ -2,6 +2,8 @@ image: golang:1.13-alpine
 
 stages:
   - test
+  - package
+  - deploy-docker
   - deploy
 
 test:
@@ -33,7 +35,7 @@ lint-helm:
   interruptible: true
 
 docker:
-  stage: deploy
+  stage: deploy-docker
   image: docker:latest
   services:
     - docker:dind
@@ -42,3 +44,32 @@ docker:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   interruptible: true
+
+pages:
+  stage: deploy
+  image:
+    name: alpine/helm:3.1.2
+    entrypoint: [""]
+  #only:
+  #  - tags
+  before_script:
+    - mkdir public
+    - cd public
+    - apk add --no-cache curl
+    - echo $CI_PAGES_URL
+    - |
+      export VERSION=$(cat ../deploy/cert-manager-webhook-inwx/Chart.yaml | grep "^version: *" | sed 's/version: //')
+    - |
+      if [ "$VERSION" != "0.1.0" ]; then curl --fail -sS $CI_PAGES_URL/content.tar.gz -o /tmp/content.tar.gz; fi
+    - |
+      [ -f /tmp/content.tar.gz ] && tar -xzf /tmp/content.tar.gz .
+    - if [ $(find . -name "*${VERSION}*" | wc -l) -gt 0 ]; then echo "Version is already released"; exit 1; fi
+  script:
+    - helm package ../deploy/cert-manager-webhook-inwx
+    - |
+      [ -f /tmp/content.tar.gz ] && export MERGE="--merge index.yaml"
+    - helm repo index . ${MERGE} --url $CI_PAGES_URL
+    - tar -czf content.tar.gz .
+  artifacts:
+    paths:
+      - public
