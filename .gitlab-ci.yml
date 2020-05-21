@@ -65,6 +65,7 @@ pages:
       [ -f /tmp/content.tar.gz ] && tar -xzf /tmp/content.tar.gz .
     - if [ $(find . -name "*${VERSION}*" | wc -l) -gt 0 ]; then echo "Version is already released"; exit 1; fi
   script:
+    - cp ../README.md ../deploy/cert-manager-webhook-inwx/
     - helm package ../deploy/cert-manager-webhook-inwx
     - |
       [ -f /tmp/content.tar.gz ] && export MERGE="--merge index.yaml"
