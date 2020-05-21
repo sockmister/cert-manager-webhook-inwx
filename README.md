@@ -1,10 +1,35 @@
 # ACME Webhook for INWX
 
+This project provides a cert-manager ACME Webhook for [INWX](https://inwx.de/) and a corresponding helm chart.
+
+The helm chart is listed at Helm Hub in repository [smueller18](https://hub.helm.sh/charts/smueller18) at <https://hub.helm.sh/charts/smueller18/cert-manager-webhook-inwx>.
+
 ## Requirements
--   [go](https://golang.org/) >= 1.13.0
+
 -   [helm](https://helm.sh/) >= v3.0.0
 -   [kubernetes](https://kubernetes.io/) >= v1.14.0
 -   [cert-manager](https://cert-manager.io/) >= 0.12.0
+
+## Configuration
+
+The following table lists the configurable parameters of the cert-manager chart and their default values.
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `groupName` | Group name of the API service. | `cert-manager-webhook-inwx.smueller18.gitlab.com` |
+| `credentialsSecretRef` | Name of secret where INWX credentials are stored. Used for RBAC to allow reading the secret by the service account name of webhook. | `inwx-credentials` |
+| `deployment.loglevel` | Number for the log level verbosity of webhook deployment | 2 |
+| `certManager.namespace` | Namespace where cert-manager is deployed to. | `cert-manager` |
+| `certManager.serviceAccountName` | Service account of cert-manager installation. | `cert-manager` |
+| `image.repository` | Image repository | `registry.gitlab.com/smueller18/cert-manager-webhook-inwx` |
+| `image.tag` | Image tag | `v0.1.0` |
+| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `service.type` | API service type | `ClusterIP` |
+| `service.port` | API service port | `443` |
+| `resources` | CPU/memory resource requests/limits | `{}` |
+| `nodeSelector` | Node labels for pod assignment | `{}` |
+| `affinity` | Node affinity for pod assignment | `{}` |
+| `tolerations` | Node tolerations for pod assignment | `[]` |
 
 ## Installation
 
@@ -15,8 +40,11 @@ Follow the [instructions](https://cert-manager.io/docs/installation/) using the 
 ### Webhook
 
 ```bash
-helm install --namespace cert-manager cert-manager-webhook-inwx deploy/cert-manager-webhook-inwx
+helm repo add smueller18 https://smueller18.gitlab.io/helm-charts
+helm repo update
+helm install --namespace cert-manager cert-manager-webhook-inwx smueller18/cert-manager-webhook-inwx
 ```
+
 **Note**: The kubernetes resources used to install the Webhook should be deployed within the same namespace as the cert-manager.
 
 To uninstall the webhook run
@@ -98,11 +126,16 @@ spec:
   dnsNames:
     - example.com
   issuerRef:
+    kind: ClusterIssuer
     name: letsencrypt-staging
   secretName: example-cert
 ```
 
 ## Development
+
+### Requirements
+
+-   [go](https://golang.org/) >= 1.13.0
 
 ### Running the test suite
 
@@ -121,16 +154,16 @@ spec:
     ```bash
     go mod download
     ```
-   
+
 1. Run tests with your created domain
     ```bash
-    go TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." test .
+    TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." go test .
     ```
-   
+
 ### Building the container image
 
 ```bash
-docker build -t registry.gitlab.com/smueller18/cert-manager-webhook-inwx .
+docker build -t registry.gitlab.com/smueller18/cert-manager-webhook-inwx:master .
 ```
 
 ### Running the full suite with microk8s

@@ -21,13 +21,13 @@ service:
   type: ClusterIP
   port: 443
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 10m
-    memory: 24Mi
+resources: {}
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 10m
+#    memory: 24Mi
 
 nodeSelector: {}
 
