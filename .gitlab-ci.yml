@@ -28,7 +28,7 @@ lint-go:
 lint-helm:
   stage: test
   image:
-    name: alpine/helm:3.0.2
+    name: alpine/helm:3.2.4
     entrypoint: [""]
   script:
     - helm lint deploy/cert-manager-webhook-inwx

@@ -46,7 +46,7 @@ func TestRunSuite(t *testing.T) {
 		dns.SetDNSServer(srv.ListenAddr()),
 		dns.SetManifestPath("testdata"),
 		dns.SetBinariesPath("kubebuilder/bin"),
-		dns.SetPropagationLimit(time.Duration(60)*time.Second),
+		dns.SetPropagationLimit(time.Duration(10)*time.Second),
 		dns.SetUseAuthoritative(false),
 	)
 

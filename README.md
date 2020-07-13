@@ -95,8 +95,8 @@ spec:
 
 ### Credentials
 For accessing INWX DNS provider, you need the username and password of the account.
-You have two choices for the configuration for the credentials but you can also mix them.
-When `username` or `password` are set, theses values are preferred and the secret will not be used.
+You have two choices for the configuration for the credentials, but you can also mix them.
+When `username` or `password` are set, these values are preferred, and the secret will not be used.
 
 If you choose another name for the secret than `inwx-credentials`, ensure you modify the value `credentialsSecretRef` in `values.yaml`.
 
