@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
@@ -150,7 +151,7 @@ func (s *solver) getCredentials(config *config, ns string) (*credentials, error)
 	if config.Username != "" {
 		creds.Username = config.Username
 	} else {
-		secret, err := s.client.CoreV1().Secrets(ns).Get(nil, config.UsernameSecretKeyRef.Name, metav1.GetOptions{})
+		secret, err := s.client.CoreV1().Secrets(ns).Get(context.Background(), config.UsernameSecretKeyRef.Name, metav1.GetOptions{})
 		if err != nil {
 			return nil, fmt.Errorf("failed to load secret %q", ns+"/"+config.UsernameSecretKeyRef.Name)
 		}
@@ -164,7 +165,7 @@ func (s *solver) getCredentials(config *config, ns string) (*credentials, error)
 	if config.Password != "" {
 		creds.Password = config.Password
 	} else {
-		secret, err := s.client.CoreV1().Secrets(ns).Get(nil, config.PasswordSecretKeyRef.Name, metav1.GetOptions{})
+		secret, err := s.client.CoreV1().Secrets(ns).Get(context.Background(), config.PasswordSecretKeyRef.Name, metav1.GetOptions{})
 		if err != nil {
 			return nil, fmt.Errorf("failed to load secret %q", ns+"/"+config.PasswordSecretKeyRef.Name)
 		}

@@ -16,5 +16,6 @@
 
 /kubebuilder
 testdata/config.json
+testdata/secret-inwx-credentials.yaml
 
 .idea/
