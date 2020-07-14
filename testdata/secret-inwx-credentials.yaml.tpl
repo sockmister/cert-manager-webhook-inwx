@@ -2,6 +2,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: inwx-credentials
-stringData:
-  username: $INWX_USER
-  password: $INWX_PASSWORD
+data:
+  username: $INWX_USER_BASE64
+  password: $INWX_PASSWORD_BASE64

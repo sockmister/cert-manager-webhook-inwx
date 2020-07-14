@@ -30,8 +30,13 @@ func TestRunSuite(t *testing.T) {
 	srv := &server.BasicServer{
 		Handler: &test.Handler{
 			Log: logf.FromContext(ctx, "dnsBasicServer"),
-			TxtRecords: map[string]string{
-				fqdn: "123d==",
+			TxtRecords: map[string][][]string{
+				fqdn: {
+					{},
+					{},
+					{"123d=="},
+					{"123d=="},
+				},
 			},
 			Zones: []string{zone},
 		},
@@ -55,6 +60,8 @@ func TestRunSuite(t *testing.T) {
 		dns.SetBinariesPath("kubebuilder/bin"),
 		dns.SetPropagationLimit(time.Duration(60)*time.Second),
 		dns.SetUseAuthoritative(false),
+		// Set to false because INWX implementation deletes all records
+		dns.SetStrict(false),
 		dns.SetConfig(&extapi.JSON{
 			Raw: d,
 		}),
@@ -63,21 +70,25 @@ func TestRunSuite(t *testing.T) {
 	fixture.RunConformance(t)
 }
 
-
 func TestRunSuiteWithSecret(t *testing.T) {
 
 	if os.Getenv("TEST_ZONE_NAME") != "" {
 		zone = os.Getenv("TEST_ZONE_NAME")
 	}
-	fqdn = "cert-manager-dns01-tests." + zone
+	fqdn = "cert-manager-dns01-tests-with-secret." + zone
 
 	ctx := logf.NewContext(nil, nil, t.Name())
 
 	srv := &server.BasicServer{
 		Handler: &test.Handler{
-			Log: logf.FromContext(ctx, "dnsBasicServer"),
-			TxtRecords: map[string]string{
-				fqdn: "123d==",
+			Log: logf.FromContext(ctx, "dnsBasicServerSecret"),
+			TxtRecords: map[string][][]string{
+				fqdn: {
+					{},
+					{},
+					{"123d=="},
+					{"123d=="},
+				},
 			},
 			Zones: []string{zone},
 		},
@@ -109,3 +120,4 @@ func TestRunSuiteWithSecret(t *testing.T) {
 
 	fixture.RunConformance(t)
 }
+

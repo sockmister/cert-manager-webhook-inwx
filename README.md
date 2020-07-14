@@ -150,6 +150,8 @@ spec:
 
 1. Copy `testdata/config.json.tpl` to `testdata/config.json` and replace username and password placeholders
 
+1. Copy `testdata/secret-inwx-credentials.yaml.tpl` to `testdata/secret-inwx-credentials.yaml` and replace username and password placeholders
+
 1. Download dependencies
     ```bash
     go mod download
@@ -157,7 +159,7 @@ spec:
 
 1. Run tests with your created domain
     ```bash
-    TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." go test .
+    TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." go test -cover .
     ```
 
 ### Building the container image

@@ -25,21 +25,21 @@ import (
 
 const (
 	defaultTTL = 1
-	requestCountLimit = 4
 )
 
-var requestCount = 0
+var requestCount = map[string]int{}
 
 type Handler struct {
 	Log logr.Logger
 
-	TxtRecords map[string]string
+	TxtRecords map[string][][]string
 	Zones      []string
 	tsigZone   string
 	lock       sync.Mutex
 }
 
 // serveDNS implements github.com/miekg/dns.Handler
+// Imitates a DNS server
 func (b *Handler) ServeDNS(w dns.ResponseWriter, req *dns.Msg) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
@@ -51,14 +51,15 @@ func (b *Handler) ServeDNS(w dns.ResponseWriter, req *dns.Msg) {
 
 	log.Info(m.String())
 
-	if requestCountLimit > requestCount {
-		txtRR, _ := dns.NewRR(fmt.Sprintf("%s %d IN TXT %s", req.Question[0].Name, defaultTTL, b.TxtRecords[req.Question[0].Name]))
-		m.Answer = append(m.Answer, txtRR)
-		requestCount++
+	if requestCount[req.Question[0].Name] < len(b.TxtRecords[req.Question[0].Name]) {
+		for _, record := range b.TxtRecords[req.Question[0].Name][requestCount[req.Question[0].Name]] {
+			txtRR, _ := dns.NewRR(fmt.Sprintf("%s %d IN TXT %s", req.Question[0].Name, defaultTTL, record))
+			m.Answer = append(m.Answer, txtRR)
+		}
+		requestCount[req.Question[0].Name]++
 	}
 
 	for _, rr := range m.Answer {
 		log.Info("responding", "response", rr.String())
 	}
 }
-
