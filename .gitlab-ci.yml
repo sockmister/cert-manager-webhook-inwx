@@ -12,6 +12,7 @@ test:
     - apk add --no-cache git g++ gettext curl
     - scripts/fetch-test-binaries.sh
     - envsubst < testdata/config.json.tpl > testdata/config.json
+    - envsubst < testdata/secret-inwx-credentials.yaml.tpl > testdata/secret-inwx-credentials.yaml
     - go mod download
     - go test -v -cover .
   coverage: '/coverage:\s(\d+(?:\.\d+)?%)/'
@@ -28,7 +29,7 @@ lint-go:
 lint-helm:
   stage: test
   image:
-    name: alpine/helm:3.0.2
+    name: alpine/helm:3.2.4
     entrypoint: [""]
   script:
     - helm lint deploy/cert-manager-webhook-inwx
