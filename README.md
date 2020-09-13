@@ -175,7 +175,7 @@ Tested with Ubuntu:
 ```bash
 sudo snap install microk8s --classic
 sudo microk8s.enable dns rbac
-sudo microk8s.kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
+sudo microk8s.kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
 sudo microk8s.config > /tmp/microk8s.config
 export KUBECONFIG=/tmp/microk8s.config
 helm install --namespace cert-manager cert-manager-webhook-inwx deploy/cert-manager-webhook-inwx
