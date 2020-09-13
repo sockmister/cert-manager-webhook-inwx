@@ -7,8 +7,8 @@ The helm chart is listed at Helm Hub in repository [smueller18](https://hub.helm
 ## Requirements
 
 -   [helm](https://helm.sh/) >= v3.0.0
--   [kubernetes](https://kubernetes.io/) >= v1.14.0
--   [cert-manager](https://cert-manager.io/) >= 0.15.0
+-   [kubernetes](https://kubernetes.io/) >= v1.18.0
+-   [cert-manager](https://cert-manager.io/) >= 1.0.0
 
 ## Configuration
 
@@ -56,7 +56,7 @@ helm uninstall --namespace cert-manager cert-manager-webhook-inwx
 
 Create a `ClusterIssuer` or `Issuer` resource as following:
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
@@ -116,7 +116,7 @@ stringData:
 Finally you can create certificates, for example:
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: example-cert

@@ -6,7 +6,7 @@ import (
 	"github.com/jetstack/cert-manager/test/acme/dns/server"
 	"gitlab.com/smueller18/cert-manager-webhook-inwx/test"
 	"io/ioutil"
-	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"log"
 	"os"
 	"testing"
