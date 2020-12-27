@@ -2,7 +2,7 @@
 
 This project provides a cert-manager ACME Webhook for [INWX](https://inwx.de/) and a corresponding helm chart.
 
-The helm chart is listed at Helm Hub in repository [smueller18](https://hub.helm.sh/charts/smueller18) at <https://hub.helm.sh/charts/smueller18/cert-manager-webhook-inwx>.
+The helm chart is listed at Artifact Hub in repository [smueller18](https://artifacthub.io/packages/search?page=1&repo=smueller18) at <https://artifacthub.io/packages/helm/smueller18/cert-manager-webhook-inwx>.
 
 ## Requirements
 

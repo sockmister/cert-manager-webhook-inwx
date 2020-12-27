@@ -6,10 +6,13 @@ stages:
   - deploy-docker
   - deploy
 
+variables:
+  HELM_IMAGE: alpine/helm:3.2.4
+
 lint-helm:
   stage: test
   image:
-    name: alpine/helm:3.2.4
+    name: $HELM_IMAGE
     entrypoint: [""]
   script:
     - helm lint deploy/cert-manager-webhook-inwx
@@ -96,7 +99,7 @@ docker:
 pages:
   stage: deploy
   image:
-    name: alpine/helm:3.1.2
+    name: $HELM_IMAGE
     entrypoint: [""]
   only:
     - tags
@@ -114,10 +117,13 @@ pages:
     - if [ $(find . -name "*${VERSION}*" | wc -l) -gt 0 ]; then echo "Version is already released"; exit 1; fi
   script:
     - cp ../README.md ../deploy/cert-manager-webhook-inwx/
-    - helm package ../deploy/cert-manager-webhook-inwx
+    - mkdir -p sync_dir
+    - helm package --destination sync_dir ../deploy/cert-manager-webhook-inwx
     - |
       [ -f /tmp/content.tar.gz ] && export MERGE="--merge index.yaml"
-    - helm repo index . ${MERGE} --url $CI_PAGES_URL
+    - helm repo index ${MERGE} --url $CI_PAGES_URL sync_dir
+    - mv -f sync_dir/* .
+    - rmdir sync_dir
     - tar -czf content.tar.gz .
   artifacts:
     paths:
