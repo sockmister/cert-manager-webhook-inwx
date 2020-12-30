@@ -1,24 +1,20 @@
-FROM golang:1.13-alpine AS build_deps
+FROM golang:1.13-alpine AS build
 
-RUN apk add --no-cache git
+ARG GOARCH="amd64"
+ARG GOARM=""
 
 WORKDIR /workspace
 
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
-
-FROM build_deps AS build
+ENV GOPATH="/workspace/.go"
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -v -o webhook -ldflags '-w -s -extldflags "-static"' .
+RUN go mod download
 
-FROM alpine:3
+RUN CGO_ENABLED=0 GOARCH=$GOARCH GOARM=$GOARM go build -v -o webhook -ldflags '-w -s -extldflags "-static"' .
 
-RUN apk add --no-cache ca-certificates
+FROM scratch
 
-COPY --from=build /workspace/webhook /usr/local/bin/webhook
+COPY --from=build /workspace/webhook /webhook
 
-ENTRYPOINT ["webhook"]
+ENTRYPOINT ["/webhook"]

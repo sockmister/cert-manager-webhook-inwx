@@ -2,7 +2,7 @@
 
 This project provides a cert-manager ACME Webhook for [INWX](https://inwx.de/) and a corresponding helm chart.
 
-The helm chart is listed at Helm Hub in repository [smueller18](https://hub.helm.sh/charts/smueller18) at <https://hub.helm.sh/charts/smueller18/cert-manager-webhook-inwx>.
+The helm chart is listed at Artifact Hub in repository [smueller18](https://artifacthub.io/packages/search?page=1&repo=smueller18) at <https://artifacthub.io/packages/helm/smueller18/cert-manager-webhook-inwx>.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ The following table lists the configurable parameters of the cert-manager chart 
 | `certManager.namespace` | Namespace where cert-manager is deployed to. | `cert-manager` |
 | `certManager.serviceAccountName` | Service account of cert-manager installation. | `cert-manager` |
 | `image.repository` | Image repository | `registry.gitlab.com/smueller18/cert-manager-webhook-inwx` |
-| `image.tag` | Image tag | `v0.3.0` |
+| `image.tag` | Image tag | `v0.4.0` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `service.type` | API service type | `ClusterIP` |
 | `service.port` | API service port | `443` |

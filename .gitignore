@@ -19,3 +19,7 @@ testdata/config.json
 testdata/secret-inwx-credentials.yaml
 
 .idea/
+
+.go/
+
+public/
