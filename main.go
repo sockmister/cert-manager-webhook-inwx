@@ -8,12 +8,14 @@ import (
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
 	certmgrv1 "github.com/jetstack/cert-manager/pkg/apis/meta/v1"
 	"github.com/nrdcg/goinwx"
+	"github.com/pquerna/otp/totp"
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/klog"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -25,6 +27,7 @@ func main() {
 type credentials struct {
 	Username string
 	Password string
+	OTPKey   string
 }
 
 type solver struct {
@@ -39,8 +42,10 @@ type config struct {
 	Sandbox              bool                        `json:"sandbox,omitempty"`
 	Username             string                      `json:"username"`
 	Password             string                      `json:"password"`
+	OTPKey               string                      `json:"otpKey"`
 	UsernameSecretKeyRef certmgrv1.SecretKeySelector `json:"usernameSecretKeyRef"`
 	PasswordSecretKeyRef certmgrv1.SecretKeySelector `json:"passwordSecretKeyRef"`
+	OTPKeySecretKeyRef   certmgrv1.SecretKeySelector `json:"otpKeySecretKeyRef"`
 }
 
 var defaultConfig = config{
@@ -176,6 +181,20 @@ func (s *solver) getCredentials(config *config, ns string) (*credentials, error)
 		}
 	}
 
+	if config.OTPKey != "" {
+		creds.OTPKey = config.OTPKey
+	} else if config.OTPKeySecretKeyRef.Key != "" {
+		secret, err := s.client.CoreV1().Secrets(ns).Get(context.Background(), config.OTPKeySecretKeyRef.Name, metav1.GetOptions{})
+		if err != nil {
+			return nil, fmt.Errorf("failed to load secret %q", ns+"/"+config.OTPKeySecretKeyRef.Name)
+		}
+		if otpKey, ok := secret.Data[config.OTPKeySecretKeyRef.Key]; ok {
+			creds.OTPKey = string(otpKey)
+		} else {
+			return nil, fmt.Errorf("no key %q in secret %q", config.OTPKeySecretKeyRef, ns+"/"+config.OTPKeySecretKeyRef.Name)
+		}
+	}
+
 	return &creds, nil
 }
 
@@ -219,7 +238,35 @@ func (s *solver) newClientFromChallenge(ch *v1alpha1.ChallengeRequest) (*goinwx.
 		klog.Error(err)
 		return nil, &cfg, fmt.Errorf("%v", err)
 	}
+
+	if creds.OTPKey != "" {
+		err, formattedError := tryToUnlockWithOTPKey(creds, client, true)
+		if err != nil {
+			return nil, &cfg, formattedError
+		}
+	}
+
 	klog.V(3).Infof("logged in at %s", client.BaseURL)
 
 	return &client, &cfg, nil
+}
+
+func tryToUnlockWithOTPKey(creds *credentials, client goinwx.Client, retryAfterPauseToSatisfyInwxSingleOTPKeyUsagePolicy bool) (error, error) {
+	tan, err := totp.GenerateCode(creds.OTPKey, time.Now())
+	if err != nil {
+		klog.Error(err)
+		return nil, fmt.Errorf("error generating opt-key: %v", err)
+	}
+
+	err = client.Account.Unlock(tan)
+
+	if err != nil && retryAfterPauseToSatisfyInwxSingleOTPKeyUsagePolicy == true {
+		time.Sleep(30 * time.Second)
+		return tryToUnlockWithOTPKey(creds, client, false)
+	} else if err != nil {
+		klog.Error(err)
+		return err, fmt.Errorf("error Unlock opt-key: %v", err)
+	}
+
+	return err, nil
 }

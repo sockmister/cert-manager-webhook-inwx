@@ -16,8 +16,9 @@
 
 /kubebuilder
 testdata/config.json
+testdata/config-otp.json
 testdata/secret-inwx-credentials.yaml
-
+testdata/secret-inwx-credentials-otp.yaml
 .idea/
 
 .go/

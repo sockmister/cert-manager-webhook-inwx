@@ -6,9 +6,9 @@ The helm chart is listed at Artifact Hub in repository [smueller18](https://arti
 
 ## Requirements
 
--   [helm](https://helm.sh/) >= v3.0.0
--   [kubernetes](https://kubernetes.io/) >= v1.18.0
--   [cert-manager](https://cert-manager.io/) >= 1.0.0
+- [helm](https://helm.sh/) >= v3.0.0
+- [kubernetes](https://kubernetes.io/) >= v1.18.0
+- [cert-manager](https://cert-manager.io/) >= 1.0.0
 
 ## Configuration
 
@@ -48,6 +48,7 @@ helm install --namespace cert-manager cert-manager-webhook-inwx smueller18/cert-
 **Note**: The kubernetes resources used to install the Webhook should be deployed within the same namespace as the cert-manager.
 
 To uninstall the webhook run
+
 ```bash
 helm uninstall --namespace cert-manager cert-manager-webhook-inwx
 ```
@@ -55,6 +56,7 @@ helm uninstall --namespace cert-manager cert-manager-webhook-inwx
 ## Issuer
 
 Create a `ClusterIssuer` or `Issuer` resource as following:
+
 ```yaml
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -84,6 +86,7 @@ spec:
               # prefer using secrets!
               # username: USERNAME
               # password: PASSWORD
+              # otpKey: OTPKEY
 
               usernameSecretKeyRef:
                 name: inwx-credentials
@@ -91,16 +94,21 @@ spec:
               passwordSecretKeyRef:
                 name: inwx-credentials
                 key: password
+              otpKeySecretKeyRef:
+                name: inwx-credentials
+                key: otpKey
 ```
 
 ### Credentials
-For accessing INWX DNS provider, you need the username and password of the account.
-You have two choices for the configuration for the credentials, but you can also mix them.
-When `username` or `password` are set, these values are preferred, and the secret will not be used.
+
+For accessing INWX DNS provider, you need the username and password of the account. You have two choices for the configuration for the credentials, but you can also mix them. When `username` or `password` are set, these values are preferred, and the secret will not be used.
 
 If you choose another name for the secret than `inwx-credentials`, ensure you modify the value `credentialsSecretRef` in `values.yaml`.
 
 The secret for the example above will look like this:
+
+### Without 2FA
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -109,6 +117,19 @@ metadata:
 stringData:
   username: USERNAME
   password: PASSWORD
+```
+
+### With 2FA enabled
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: inwx-credentials
+stringData:
+  username: USERNAME
+  password: PASSWORD
+  otpKey: OTPKEY
 ```
 
 ### Create a certificate
@@ -135,7 +156,7 @@ spec:
 
 ### Requirements
 
--   [go](https://golang.org/) >= 1.13.0
+- [go](https://golang.org/) >= 1.13.0
 
 ### Running the test suite
 
@@ -144,22 +165,34 @@ spec:
     scripts/fetch-test-binaries.sh
     ```
 
-1. Create a new test account at [https://ote.inwx.com/en/customer/signup](https://ote.inwx.com/en/customer/signup) or use an existing account
+1. Create two test accounts (one without 2FA and one with 2FA enabled) at <https://ote.inwx.com/en/customer/signup> or use existing ones.
 
-1. Go to [https://ote.inwx.de/en/nameserver2#tab=ns](https://ote.inwx.de/en/nameserver2#tab=ns) and add a new domain
+   1. Without 2FA
 
-1. Copy `testdata/config.json.tpl` to `testdata/config.json` and replace username and password placeholders
+      1. Go to <https://ote.inwx.de/en/nameserver2#tab=ns> and add a new domain
+      
+      1. Copy `testdata/config.json.tpl` to `testdata/config.json` and replace username and password placeholders
+      
+      1. Copy `testdata/secret-inwx-credentials.yaml.tpl` to `testdata/secret-inwx-credentials.yaml` and replace username and password placeholders
+   
+   1. With 2FA
+   
+      1. Enable 2FA at <https://ote.inwx.com/en/setting/access#>
 
-1. Copy `testdata/secret-inwx-credentials.yaml.tpl` to `testdata/secret-inwx-credentials.yaml` and replace username and password placeholders
+      1. Go to <https://ote.inwx.de/en/nameserver2#tab=ns> and add a new domain
+
+      1. Copy `testdata/config-otp.json.tpl` to `testdata/config-otp.json` and replace username, password and OTP placeholders
+
+      1. Copy `testdata/secret-inwx-credentials-otp.yaml.tpl` to `testdata/secret-inwx-credentials-otp.yaml` and replace username, password and OTP placeholders
 
 1. Download dependencies
     ```bash
     go mod download
     ```
 
-1. Run tests with your created domain
+1. Run tests with your created domains
     ```bash
-    TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." go test -cover .
+    TEST_ZONE_NAME="$YOUR_NEW_DOMAIN." TEST_ZONE_NAME_WITH_TWO_FA="$YOUR_NEW_DOMAIN_WITH_TWO_FA." go test -cover .
     ```
 
 ### Building the container image
