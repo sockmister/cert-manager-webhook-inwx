@@ -15,6 +15,7 @@ RUN CGO_ENABLED=0 GOARCH=$GOARCH GOARM=$GOARM go build -v -o webhook -ldflags '-
 
 FROM scratch
 
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /workspace/webhook /webhook
 
 ENTRYPOINT ["/webhook"]

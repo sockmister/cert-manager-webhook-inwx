@@ -11,7 +11,7 @@ certManager:
 
 image:
   repository: registry.gitlab.com/smueller18/cert-manager-webhook-inwx
-  tag: v0.4.0
+  tag: v0.4.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""

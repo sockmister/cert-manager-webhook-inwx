@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+
+- Add CA certificates to Docker image
+
 ## v0.4.0
 
 - Add multi arch container images
