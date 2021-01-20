@@ -22,7 +22,7 @@ The following table lists the configurable parameters of the cert-manager chart 
 | `certManager.namespace` | Namespace where cert-manager is deployed to. | `cert-manager` |
 | `certManager.serviceAccountName` | Service account of cert-manager installation. | `cert-manager` |
 | `image.repository` | Image repository | `registry.gitlab.com/smueller18/cert-manager-webhook-inwx` |
-| `image.tag` | Image tag | `v0.4.0` |
+| `image.tag` | Image tag | `v0.4.1` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `service.type` | API service type | `ClusterIP` |
 | `service.port` | API service port | `443` |
@@ -170,13 +170,13 @@ spec:
    1. Without 2FA
 
       1. Go to <https://ote.inwx.de/en/nameserver2#tab=ns> and add a new domain
-      
+
       1. Copy `testdata/config.json.tpl` to `testdata/config.json` and replace username and password placeholders
-      
+
       1. Copy `testdata/secret-inwx-credentials.yaml.tpl` to `testdata/secret-inwx-credentials.yaml` and replace username and password placeholders
-   
+
    1. With 2FA
-   
+
       1. Enable 2FA at <https://ote.inwx.com/en/setting/access#>
 
       1. Go to <https://ote.inwx.de/en/nameserver2#tab=ns> and add a new domain
