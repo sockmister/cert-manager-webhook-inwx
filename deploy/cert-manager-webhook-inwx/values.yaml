@@ -1,6 +1,7 @@
 groupName: cert-manager-webhook-inwx.smueller18.gitlab.com
 
-credentialsSecretRef: inwx-credentials
+credentialsSecretRefs:
+- inwx-credentials
 
 deployment:
   loglevel: 2

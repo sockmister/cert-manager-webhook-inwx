@@ -99,7 +99,9 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    resourceNames: [{{ .Values.credentialsSecretRef | quote }}]
+    resourceNames: {{- range .Values.credentialsSecretRefs }}
+    - {{ . | quote }}
+    {{- end }}
     verbs: ["get", "watch"]
 
 ---

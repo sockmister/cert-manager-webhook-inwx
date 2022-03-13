@@ -17,7 +17,7 @@ The following table lists the configurable parameters of the cert-manager chart 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `groupName` | Group name of the API service. | `cert-manager-webhook-inwx.smueller18.gitlab.com` |
-| `credentialsSecretRef` | Name of secret where INWX credentials are stored. Used for RBAC to allow reading the secret by the service account name of webhook. | `inwx-credentials` |
+| `credentialsSecretRefs` | Names of secrets where INWX credentials are stored. Used for RBAC to allow reading the secret by the service account name of webhook. | `['inwx-credentials']` |
 | `deployment.loglevel` | Number for the log level verbosity of webhook deployment | 2 |
 | `certManager.namespace` | Namespace where cert-manager is deployed to. | `cert-manager` |
 | `certManager.serviceAccountName` | Service account of cert-manager installation. | `cert-manager` |
@@ -103,7 +103,7 @@ spec:
 
 For accessing INWX DNS provider, you need the username and password of the account. You have two choices for the configuration for the credentials, but you can also mix them. When `username` or `password` are set, these values are preferred, and the secret will not be used.
 
-If you choose another name for the secret than `inwx-credentials`, ensure you modify the value `credentialsSecretRef` in `values.yaml`.
+If you choose another name for the secret than `inwx-credentials`, ensure to add to or modify the value of `credentialsSecretRefs` in `values.yaml`.
 
 The secret for the example above will look like this:
 
