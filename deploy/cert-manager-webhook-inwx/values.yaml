@@ -11,9 +11,9 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: registry.gitlab.com/smueller18/cert-manager-webhook-inwx
-  tag: v0.5.0
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/sockmister/cert-manager-webhook-inwx
+  tag: latest
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
