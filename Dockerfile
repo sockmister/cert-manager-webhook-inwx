@@ -1,4 +1,6 @@
-FROM golang:1.26-alpine AS build
+FROM golang:1.26.10-alpine AS build
+
+RUN apk add --no-cache --upgrade ca-certificates ca-certificates-bundle
 
 ARG GOARCH="amd64"
 ARG GOARM=""
